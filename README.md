@@ -12,6 +12,7 @@ Harmonizer 02 is the second iteration in a series of harmonizer projects, aimed 
 * Backtracking funcions will be improved for efficiency.
 * Valid Note ranges, for each of the voices, will be sorted by proximity to previous chord notes. The idea is to make the system biased towards preserving common tones and towards privileging smaller melodic intervals within each voice.
 * Will be able to handle 4 to 7 voices.
+* Empty string in progression as a way of segmenting the progression. Allowing the program to harmonize each chunk separately.
 
 ## Extended Syntax
 
@@ -34,3 +35,5 @@ Where:
 
 Additionally:
 * ***-m7*** will indicate an anticipation.
+
+Chord position will either be determined by the user, using extended syntax to indicate which note goes on the base. Assuming root position as default, if no indication is given. Or by letting the program take charge and decide, for each chord, what the best position is. 
