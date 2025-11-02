@@ -28,6 +28,6 @@ Will be added:
 ```
 
 Where:
-* **m7-** minor seventh will be retarded onto the next chord
-* **M3** Major third will be the bass note
-* **Rt** The root will be played by the top note
+* ***m7-*** means the minor seventh will be retarded onto the next chord
+* ***M3*** means the major third will be the bass note
+* ***Rt*** means the root will be played by the top voice
