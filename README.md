@@ -36,4 +36,4 @@ Where:
 Additionally:
 * ***-m7*** will indicate an anticipation.
 
-Chord position will either be determined by the user, using extended syntax to indicate which note goes on the base. Assuming root position as default, if no indication is given. Or by letting the program take charge and decide, for each chord, what the best position is. 
+Chord position will either be determined by the user, using extended syntax to indicate which note goes on the base. Assuming root position as default, if no indication is given. Or by letting the program take charge and decide, for each chord, what the best position is. Whether that will be controled by an input argument or not, is not yet clear. 
