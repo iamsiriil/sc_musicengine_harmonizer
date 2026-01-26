@@ -1,0 +1,3 @@
+MESession {
+	classvar <>chordData;
+}
