@@ -28,11 +28,13 @@ SynthDef(\tone, { |freq = 440, amp = 0.3|
 
 	Routine {
 		chordDict.do { |c|
-			"Chord: %".format(c).postln;
+			"Chord: ".post;
 			c.do{ |n|
+				"% ".format(n).post;
 				Synth(\tone, [\freq, n.freq, \amp, 0.5]);
 				0.25.wait;
 			};
+			"".postln;
 			1.wait;
 		};
 	}.play;
