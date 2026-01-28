@@ -33,11 +33,11 @@ MERules.changeRules((
 MEVoice.voiceNumber
 
 // Only four to seven voices allowed.
-// Number of voices should be greater or equal to,
-// number on intervals present in the range.
+// Number of voices must be greater or equal to
+// number on degrees present in the range.
 (
 MEBacktrack.counter = 0;
-~c = MEChord("C-^7", 5);
+~c = MEChord("C-^7", 5); // 7th chord, four degrees (P1, m3, P5, m7); five voices.
 //~c.noteRange.postln;
 ~c.chordSet.postln;
 ~c.chordSet.size.postln;
