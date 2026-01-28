@@ -1,21 +1,27 @@
-MEBacktrack {
+MEBacktrack : MEChordRules {
+	classvar <>counter = 0;
+
 
 	*backtrackChords { |vocalRange, nextChord, validChords, i|
 		var voice = MEVoice.voiceNames[i];
 
-		"backtrackChords".postln;
+		counter = counter + 1;
+
+		//"backtrackChords".postln;
 
 		if (i == MEVoice.voiceNumber) {
-			if (MEChordRules.chordIsValid(nextChord)) {
-				validChords.add(nextChord.copy.postln);
+			if (super.chordIsValid(nextChord)) {
+				validChords.add(nextChord.copy);
 				^nil;
 			}
 		};
 
 		vocalRange[voice].do { |n|
-			nextChord[i] = n.copy;
-			if (MEChordRules.checkVoiceSpacing(nextChord, i)) {
-				MEBacktrack.backtrackChords(vocalRange, nextChord, validChords, i + 1);
+
+			nextChord[i] = n;
+
+			if (super.noteIsValid(nextChord, n, i)) {
+				this.backtrackChords(vocalRange, nextChord, validChords, i + 1);
 			} {
 				nextChord[i] = 0;
 			};

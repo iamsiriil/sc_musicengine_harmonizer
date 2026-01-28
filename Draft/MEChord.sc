@@ -1,7 +1,7 @@
 MEChord {
 	classvar <noteRange;
 	classvar <vocalRange;
-	classvar <chordDict;
+	classvar <chordSet;
 	var <chord;
 
 	*new { |symbol, voiceNum = 4|
@@ -10,15 +10,15 @@ MEChord {
 
 	init { |newS, newN|
 
-		"init".postln;
+		//"init".postln;
 
 		MEVoice.voiceNumber = newN;
 
 		noteRange  = MENoteRange(newS);
 		MESession.chordData = noteRange;
-		vocalRange = MEChord.getChordVocalRange;
-		chordDict  = OrderedIdentitySet();
+		chordSet  = OrderedIdentitySet();
 
+		vocalRange = MEChord.getChordVocalRange;
 		MEChord.getChords();
 
 		^this;
@@ -29,7 +29,7 @@ MEChord {
 		var dict  = Dictionary();
 		var range;
 
-		"getChordVocalRange".postln;
+		//"getChordVocalRange".postln;
 
 		names.do { |v|
 
@@ -45,16 +45,20 @@ MEChord {
 	*getChords {
 		var nextChord   = Array.fill(MEVoice.voiceNumber, {0});
 
-		"getChords".postln;
+		//"getChords".postln;
 
-		MEBacktrack.backtrackChords(this.vocalRange, nextChord, this.chordDict, 0);
+		MEBacktrack.backtrackChords(this.vocalRange, nextChord, this.chordSet, 0);
 	}
 
-	chordDict {
-		^chordDict;
+	chordSet {
+		^chordSet;
 	}
 
 	noteRange {
 		^noteRange;
+	}
+
+	vocalRange {
+		^vocalRange;
 	}
 }

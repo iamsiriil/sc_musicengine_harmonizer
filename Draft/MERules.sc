@@ -1,9 +1,9 @@
 MERules {
-	classvar <default;
+	classvar <rules;
 
 	*initClass {
 
-		default = Dictionary[
+		rules = Dictionary[
 			/*\enforceMelodicIntervals      -> true,
 			\enforceVocalRange            -> true,
 			\enforceCommonTones           -> false,
@@ -18,10 +18,27 @@ MERules {
 			\enforceRootPosition          -> true,
 			\enforceFirstInversion        -> false,
 			\enforceSecondInversion       -> false,
+			\enforceThirdInversion        -> false,
 			\enforceExtendedInversion     -> false
 			//\enforceUnisonProhibition     -> false
 		];
 
 		super.initClass;
+	}
+
+	*listRules {
+
+		rules.keysValuesDo { |k, v|
+
+			"% ".format(k).padRight(29).post;
+			"%".format(v).postln;
+		};
+	}
+
+	*changeRules { |newRules|
+
+		newRules.keysValuesDo { |k, v|
+			rules[k] = v;
+		}
 	}
 }

@@ -16,29 +16,52 @@ SynthDef(\tone, { |freq = 440, amp = 0.3|
 }).add;
 )
 
-// Only four voices allowed for now
+MERules.listRules
+
 (
-~c = MEChord("F#-^7");
-~c.noteRange.postln;
-~c.chordDict.postln;
+MERules.changeRules((
+	\enforceChordPosition:         true,
+	\enforceRootPosition:          true,
+	\enforceFirstInversion:        false,
+	\enforceSecondInversion:       false,
+	\enforceThirdInversion:        false,
+	\enforceExtendedInversion:     false,
+	//\enforceVoiceCrossProhibition: true,
+));
+)
+
+MEVoice.voiceNumber
+
+// Only four to seven voices allowed
+(
+MEBacktrack.counter = 0;
+~c = MEChord("C-^7", 5);
+//~c.noteRange.postln;
+~c.chordSet.postln;
+~c.chordSet.size.postln;
+MEBacktrack.counter;
 )
 
 (
-~routine = { |chordDict|
+~routine = { |chordSet|
 
 	Routine {
-		chordDict.do { |c|
-			"Chord: ".post;
+		chordSet.do { |c, i|
+			//"Chord#% ".format(i).padRight(4).post;
 			c.do{ |n|
-				"% ".format(n).post;
-				Synth(\tone, [\freq, n.freq, \amp, 0.5]);
+				"% ".format(n.name).padRight(4).post;
+				Synth(\tone, [\freq, n.freq * 2, \amp, 0.5]);
 				0.25.wait;
 			};
 			"".postln;
-			1.wait;
+			0.5.wait;
 		};
 	}.play;
 };
-~routine.(~c.chordDict);
+~routine.(~c.chordSet);
 )
 
+(
+~int = [\P1, \M3, \P5, \P1, \M3, \M3];
+~int.select { |a, b| var n; n = ~int.count { |i| i == a}; (n > 1) && (n < 4) };
+)
