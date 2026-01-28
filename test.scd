@@ -32,7 +32,9 @@ MERules.changeRules((
 
 MEVoice.voiceNumber
 
-// Only four to seven voices allowed
+// Only four to seven voices allowed.
+// Number of voices should be greater or equal to,
+// number on intervals present in the range.
 (
 MEBacktrack.counter = 0;
 ~c = MEChord("C-^7", 5);
