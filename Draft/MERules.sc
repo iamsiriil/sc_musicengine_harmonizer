@@ -19,12 +19,14 @@ MERules {
 			\enforceFirstInversion        -> false,
 			\enforceSecondInversion       -> false,
 			\enforceThirdInversion        -> false,
-			\enforceExtendedInversion     -> false
-			//\enforceUnisonProhibition     -> false
+			\enforceExtendedInversion     -> false,
+			\enforceUnisonProhibition     -> false
 		];
 
 		super.initClass;
 	}
+
+	/****************************************************************************************/
 
 	*listRules {
 
@@ -34,6 +36,8 @@ MERules {
 			"%".format(v).postln;
 		};
 	}
+
+	/****************************************************************************************/
 
 	*changeRules { |newRules|
 

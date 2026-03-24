@@ -1,4 +1,10 @@
 MESession {
 	classvar <>chordData;
-	classvar <>count = 0;
+
+	*initClass {
+
+		chordData = Dictionary();
+
+		super.initClass;
+	}
 }

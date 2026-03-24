@@ -4,15 +4,7 @@ MEVoice {
 	classvar <voiceNumber = 4;
 	classvar <voiceNames = #[\bas, \ten, \alt, \spn];
 
-	*initClass {
-
-		/*range = Dictionary[
-			\bas -> [40, 62],
-			\ten -> [48, 69],
-			\alt -> [55, 76],
-			\spn -> [61, 81]
-		];*/
-	}
+	/****************************************************************************************/
 
 	*voiceNumber_ { |voiceNum|
 
