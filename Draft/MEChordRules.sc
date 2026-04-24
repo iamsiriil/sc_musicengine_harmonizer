@@ -78,17 +78,24 @@ MEChordRules : MERules {
 	*noteIsValid { |nextChord, menote, data, i|
 		var degreesNum = data[\degrees].size;
 		var voiceNum   = MEVoice.voiceNumber;
+		var ruleP;
+
+		if (data[\rules].notNil) {
+			ruleP = data[\rules];
+		} {
+			ruleP = rules;
+		};
 
 		//"noteIsValid".postln;
 
 		case
-		{ (i == 0) && rules[\enforceChordPosition] } {
+		{ (i == 0) && ruleP[\enforceChordPosition] } {
 			case
-			{ rules[\enforceRootPosition]      } { ^menote.number(true) == 1 }
-			{ rules[\enforceFirstInversion]    } { ^menote.number(true) == 3 }
-			{ rules[\enforceSecondInversion]   } { ^menote.number(true) == 5 }
-			{ rules[\enforceThirdInversion]    } { ^menote.number(true) == 7 }
-			{ rules[\enforceExtendedInversion] } { ^Set[9, 11, 13].includes(menote.number(true)) }
+			{ ruleP[\enforceRootPosition]      } { ^menote.number(true) == 1 }
+			{ ruleP[\enforceFirstInversion]    } { ^menote.number(true) == 3 }
+			{ ruleP[\enforceSecondInversion]   } { ^menote.number(true) == 5 }
+			{ ruleP[\enforceThirdInversion]    } { ^menote.number(true) == 7 }
+			{ ruleP[\enforceExtendedInversion] } { ^Set[9, 11, 13].includes(menote.number(true)) }
 		}
 		{ (i > 0) && (degreesNum == voiceNum) } {
 			^(this.checkVoiceSpacing(nextChord, data, i) &&

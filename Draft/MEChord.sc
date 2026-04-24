@@ -4,35 +4,47 @@ MEChord {
 	var <chord;
 
 
-	*new { |symbol, prevChord, voiceNum = 4|
-		^super.new.init(symbol, prevChord, voiceNum)
+	*new { |symbol, prevChord, ruleProf, voiceNum|
+		^super.new.init(symbol, prevChord, ruleProf, voiceNum)
 	}
 
 	*initClass { ^super.initClass }
 
-	init { |newS, newP, newN|
+	init { |newS, newP, newR, newN|
 		var chordData = Dictionary();
 		var noteRange;
 
 		"init".postln;
 
-		MEVoice.voiceNumber = newN;
 
+		/* 1. Get note range */
 		if ((noteRange = MESession.chordData[newS.asSymbol]).isNil) {
 			noteRange = MENoteRange(newS);
+			MESession.chordData[newS.asSymbol] = noteRange;
 		};
 
-		chordData[\symbol] = noteRange.symbol.asSymbol;
+		/* 2. Initialize chord data dictionary */
+		chordData[\symbol]  = noteRange.symbol.asSymbol;
 		chordData[\degrees] = noteRange.intervals;
+		chordData[\rules]   = newR;
 
-		if (MESession.chordData[chordData[\symbol]].isNil) {
-			MESession.chordData[chordData[\symbol]] = noteRange;
+		/* 3. Initialize MEVoice class */
+		if (newN.notNil) {
+			MEVoice.noiceNumber = newN;
+		} {
+			MEVoice.voiceNumber = chordData[\degrees].size;
 		};
+
+		/* 4. Get valid vocal ranges */
 		chordData[\range] = MEChord.getChordVocalRange(chordData, newP);
 
+		/* 5. Get chords */
 		chords = MEChord.getChords(chordData).asArray;
 
+		/* 6. Convert each chord into a MENoteRange */
 		chords.do { |n, i| chords[i] = MENoteRange.with(noteRange.meSymbol, *n) };
+
+		/* 7. Assign a face chord */
 		chord  = chords[0];
 
 		^this;

@@ -1,9 +1,10 @@
 MERules {
+	classvar <default;
 	classvar <rules;
 
 	*initClass {
 
-		rules = Dictionary[
+		default = Dictionary[
 			/*\enforceMelodicIntervals      -> true,
 			\enforceVocalRange            -> true,
 			\enforceCommonTones           -> false,
@@ -22,6 +23,8 @@ MERules {
 			\enforceExtendedInversion     -> false,
 			\enforceUnisonProhibition     -> false
 		];
+
+		rules = default;
 
 		super.initClass;
 	}
@@ -44,5 +47,13 @@ MERules {
 		newRules.keysValuesDo { |k, v|
 			rules[k] = v;
 		}
+	}
+
+	*rules_ { |ruleDict|
+		rules = ruleDict;
+	}
+
+	*default_ {
+		rules = default;
 	}
 }
