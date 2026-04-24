@@ -4,9 +4,9 @@ MEChordRules : MERules {
 		var chordInt = nextChord.collect { |c| c.degree }.asSet;
 		var rangeInt = data[\degrees].asSet;
 
-		"checkChordIsComplete".postln;
+		//"checkChordIsComplete".postln;
 
-		^(chordInt == rangeInt).postln;
+		^(chordInt == rangeInt);
 	}
 
 	/****************************************************************************************/
@@ -15,7 +15,7 @@ MEChordRules : MERules {
 	*chordIsValid { |nextChord, data|
 		var result = true;
 
-		"chordIsValid".postln;
+		//"chordIsValid".postln;
 
 		^MEChordRules.checkChordIsComplete(nextChord, data);
 	}

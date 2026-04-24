@@ -8,10 +8,10 @@ MEBacktrack : MEChordRules {
 
 		counter = counter + 1;
 
-		"backtrackChords".postln;
+		//"backtrackChords".postln;
 
 		if (i == MEVoice.voiceNumber) {
-			if (super.chordIsValid(nextChord, chordData).postln) {
+			if (super.chordIsValid(nextChord.postln, chordData).postln) {
 				validChords.add(nextChord.copy);
 			}
 		};
@@ -19,8 +19,6 @@ MEBacktrack : MEChordRules {
 		chordData[\range][voice].do { |n|
 
 			nextChord[i] = n;
-
-			"nextChord: %".format(nextChord).postln;
 
 			if (super.noteIsValid(nextChord, n, chordData, i)) {
 				this.backtrackChords(chordData, nextChord, validChords, i + 1);

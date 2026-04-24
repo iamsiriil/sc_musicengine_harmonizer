@@ -1,43 +1,56 @@
 MEChord {
-	classvar <chordData;
-	classvar <vocalRange;
-	classvar <>chordSet;
-	classvar <>chord;
+	//var <chordData;
+	var <chords;
+	var <chord;
 
-	*new { |symbol, voiceNum = 4|
-		^super.new.init(symbol, voiceNum)
+
+	*new { |symbol, prevChord, voiceNum = 4|
+		^super.new.init(symbol, prevChord, voiceNum)
 	}
 
-	init { |newS, newN|
+	*initClass { ^super.initClass }
+
+	init { |newS, newP, newN|
+		var chordData = Dictionary();
 		var noteRange;
 
 		"init".postln;
 
-		noteRange = MENoteRange(newS);
 		MEVoice.voiceNumber = newN;
 
-		chordData = Dictionary[
-			\symbol  -> noteRange.symbol.asSymbol,
-			\degrees -> noteRange.intervals,
-		];
+		if ((noteRange = MESession.chordData[newS.asSymbol]).isNil) {
+			noteRange = MENoteRange(newS);
+		};
 
-		MESession.chordData[chordData[\symbol]] = noteRange;
+		chordData[\symbol] = noteRange.symbol.asSymbol;
+		chordData[\degrees] = noteRange.intervals;
 
-		chordData[\range] = MEChord.getChordVocalRange(chordData[\symbol]);
-		MEChord.getChords();
+		if (MESession.chordData[chordData[\symbol]].isNil) {
+			MESession.chordData[chordData[\symbol]] = noteRange;
+		};
+		chordData[\range] = MEChord.getChordVocalRange(chordData, newP);
 
-		chordSet = chordSet.asArray;
-		chord    = chordSet[0];
+		chords = MEChord.getChords(chordData).asArray;
+
+		chords.do { |n, i| chords[i] = MENoteRange.with(noteRange.meSymbol, *n) };
+		chord  = chords[0];
 
 		^this;
 	}
 
+	printOn { |stream|
+		//stream << "MEChord";
+		stream << chord;
+		//stream << "";
+	}
+
+
 	/****************************************************************************************/
 
-	*getChordVocalRange {
-		var symbol = this.chordData[\symbol];
+	*getChordVocalRange { |chordData, prevChord|
+		var symbol = chordData[\symbol];
 		var names  = MEVoice.voiceNames;
-		var dict   = Dictionary();
+		var dict   = Dictionary.new();
 		var range;
 
 		"getChordVocalRange".postln;
@@ -50,42 +63,55 @@ MEChord {
 				(n.midi >= range[0]) && (n.midi <= range[1])
 			}.as(OrderedIdentitySet);
 		};
-		^dict.postln;
+
+		if (prevChord.notNil) {
+
+			names.do { |v, i|
+				dict[v] = dict[v].sort { |a, b|
+					(prevChord[i].midi - a.midi).abs <= (prevChord[i].midi - b.midi).abs;
+				};
+			};
+		};
+
+		^dict;
 	}
 
 	/****************************************************************************************/
 
-	*getChords {
+	*getChords { |chordData|
 		var nextChord = Array.fill(MEVoice.voiceNumber, {0});
+		var chords = OrderedIdentitySet();
 
 		"getChords".postln;
 
-		this.chordSet = OrderedIdentitySet();
+		//this.chords = OrderedIdentitySet();
 
-		MEBacktrack.backtrackChords(this.chordData, nextChord, this.chordSet, 0);
+		MEBacktrack.backtrackChords(chordData, nextChord, chords, 0);
+
+		^chords;
 	}
 
 	/****************************************************************************************/
 
-	chordSet {
-		^chordSet;
-	}
+	/*chords {
+		^this.chords;
+	}*/
 
 	/****************************************************************************************/
 
-	chordData {
+	/*chordData {
 		^chordData;
-	}
+	}*/
 
 	/****************************************************************************************/
 
 	vocalRange {
-		^vocalRange;
+		^this.chordData[\range];
 	}
 
 	/****************************************************************************************/
 
-	chord {
+	/*chord {
 		^chord;
-	}
+	}*/
 }
