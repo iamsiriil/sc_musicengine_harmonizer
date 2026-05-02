@@ -1,3 +1,4 @@
+/****************************************************************************************/
 (
 s.waitForBoot{
 	SynthDef(\tone, { |freq = 440, amp = 0.3|
@@ -14,6 +15,7 @@ s.waitForBoot{
 		Out.ar(0, Pan2.ar(sig, 0));
 	}).add;
 
+	// Change default rules
 	MERules.changeRules((
 		enforceChordPosition:         true,
 		enforceRootPosition:          true,
@@ -26,6 +28,7 @@ s.waitForBoot{
 		//\enforceVoiceCrossProhibition: true,
 	));
 
+	// Dummy rule profile 1
 	~r1 = Dictionary[
 		\enforceChordPosition     -> false,
 		\enforceRootPosition      -> true,
@@ -36,6 +39,7 @@ s.waitForBoot{
 		\enforceUnisonProhibition -> true
 	];
 
+	// Dummy rule profile 2
 	~r2 = Dictionary[
 		\enforceChordPosition     -> true,
 		\enforceRootPosition      -> false,
@@ -46,6 +50,7 @@ s.waitForBoot{
 		\enforceUnisonProhibition -> true
 	];
 
+	// Previous chord as MENoteRange
 	~prevC = MENoteRange.newFromName(
 		"C#3", "G#3", "E4", "B4",
 		degrees: [\P1, \P5, \m3, \m7]
@@ -53,6 +58,8 @@ s.waitForBoot{
 }
 )
 
+/****************************************************************************************/
+// Monitor number of backtrack calls
 (
 MEBacktrack.counter = 0;
 ~c0 = MEChord("Bm3P5m7", prevChord: ~p2);
@@ -62,14 +69,14 @@ MEBacktrack.counter = 0;
 MEBacktrack.counter.postln;
 )
 
+/****************************************************************************************/
+// Simple two chord alternation
 (
 MEBacktrack.counter = 0;
-~c1 = MEChord("Bm3P5m7", ruleProf: ~r1);
-~p1 = ~c1.chords.choose;
-
-~c2 = MEChord("Em3P5m7", ~p1, ~r2);
-~p2 = ~c2.chord;
-~c1;
+// Create chord A
+~c1 = MEChord("Bm3P5m7", ruleProf: ~r1).chords.choose.postln;
+// Create chord B from chord A
+~c2 = MEChord("Em3P5m7", ~c1, ~r2).chords.postln;
 )
 
 (
@@ -95,5 +102,5 @@ MEBacktrack.counter = 0;
 		};
 	}.play;
 };
-~routine.(~p1, ~c2.chords);
+~routine.(~c1, ~c2);
 )
