@@ -1,10 +1,10 @@
 MEChord {
 	//var <chordData;
-	var <chords;
+	var <chords; // <- change to register (implement first resolution backtrack function)
 	var <chord;
 
 
-	*new { |symbol, prevChord, ruleProf, voiceNum|
+	*new { |symbol, prevChord, ruleProf, voiceNum| // <- backtrackAll = false
 		^super.new.init(symbol, prevChord, ruleProf, voiceNum)
 	}
 
@@ -12,40 +12,45 @@ MEChord {
 
 	init { |newS, newP, newR, newN|
 		var chordData = Dictionary();
+		//var newSymbol = MESymbol(newS);
 		var noteRange;
 
 		"init".postln;
 
+		newS = MESymbol(newS);
+
 
 		/* 1. Get note range */
-		if ((noteRange = MESession.chordData[newS.asSymbol]).isNil) {
-			noteRange = MENoteRange(newS);
-			MESession.chordData[newS.asSymbol] = noteRange;
+		if ((noteRange = MESession.chordData[newS.symbol.asSymbol]).isNil) {
+			noteRange = MENoteRange(newS.symbol);
+			MESession.chordData[noteRange.symbol.asSymbol] = noteRange;
 		};
 
 		/* 2. Initialize chord data dictionary */
-		chordData[\symbol]  = noteRange.symbol.asSymbol;
-		chordData[\degrees] = noteRange.intervals;
+		chordData[\symbol]  = noteRange.symbol.asSymbol;                           // Always use the normalized symbol as a
+		                                                                           // SC Symbol and not the alias, if it exists).
+		chordData[\degrees] = noteRange.intervals;                                 // Array of degrees present in range.
 		chordData[\rules]   = newR;
+		chordData[\pChord]  = newP;
 
 		/* 3. Initialize MEVoice class */
 		if (newN.notNil) {
-			MEVoice.noiceNumber = newN;
+			MEVoice.voiceNumber = newN;
 		} {
-			MEVoice.voiceNumber = chordData[\degrees].size;
+			MEVoice.voiceNumber = chordData[\degrees].size;                        // Get voice number from number of degrees.
 		};
 
 		/* 4. Get valid vocal ranges */
-		chordData[\range] = MEChord.getChordVocalRange(chordData, newP);
+		chordData[\range] = MEChord.getChordVocalRange(chordData, newP);           // Get sets of valid notes within vocal range.
 
 		/* 5. Get chords */
-		chords = MEChord.getChords(chordData).asArray;
+		chords = MEChord.getChords(chordData).asArray;                             // Get collection of all possible solutions.
 
 		/* 6. Convert each chord into a MENoteRange */
-		chords.do { |n, i| chords[i] = MENoteRange.with(noteRange.meSymbol, *n) };
+		chords.do { |n, i| chords[i] = MENoteRange.with(noteRange.meSymbol, *n) }; // Convert each solution into a MENoteRange object.
 
 		/* 7. Assign a face chord */
-		chord  = chords[0];
+		chord  = chords[0];                                                        // Assign first chord as object's facade.
 
 		^this;
 	}
@@ -76,6 +81,7 @@ MEChord {
 			}.as(OrderedIdentitySet);
 		};
 
+		// Sort by proximity to previous voice note (bias twards small leaps and common tones ??)
 		if (prevChord.notNil) {
 
 			names.do { |v, i|

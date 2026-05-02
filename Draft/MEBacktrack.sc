@@ -11,7 +11,7 @@ MEBacktrack : MEChordRules {
 		//"backtrackChords".postln;
 
 		if (i == MEVoice.voiceNumber) {
-			if (super.chordIsValid(nextChord.postln, chordData)) {
+			if (super.chordIsValid(nextChord, chordData)) {
 				validChords.add(nextChord.copy);
 			}
 		};
@@ -26,6 +26,13 @@ MEBacktrack : MEChordRules {
 				nextChord[i] = 0;
 			};
 		}
-
 	}
+
+	/****************************************************************************************/
+
+	//*backtrackChord {}
+
+	/****************************************************************************************/
+
+	//*backtrackProgression {}
 }

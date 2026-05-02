@@ -1,5 +1,12 @@
 MEChordRules : MERules {
 
+/*
+	TWO CHORD CHECKERS
+    - Valid melodic leaps
+	- parallel fifths
+	- parallel octaves
+*/
+
 	*checkChordIsComplete { |nextChord, data|
 		var chordInt = nextChord.collect { |c| c.degree }.asSet;
 		var rangeInt = data[\degrees].asSet;
@@ -17,12 +24,16 @@ MEChordRules : MERules {
 
 		//"chordIsValid".postln;
 
+		/*if (data[\pChord].notNil) {
+			this.checkPrevChord(nextChord, data);
+		};*/
+
 		^MEChordRules.checkChordIsComplete(nextChord, data);
 	}
 
 	/****************************************************************************************/
 
-	*checkUnisons { |nextChord, menote|
+	*checkUnisons { |nextChord, menote| // <- issue here!
 		var notes = nextChord.select { |n| n.isKindOf(MENote) };
 
 		//"checkUnisons".postln;
@@ -80,13 +91,14 @@ MEChordRules : MERules {
 		var voiceNum   = MEVoice.voiceNumber;
 		var ruleP;
 
+		//"noteIsValid".postln;
+
 		if (data[\rules].notNil) {
 			ruleP = data[\rules];
 		} {
 			ruleP = rules;
 		};
 
-		//"noteIsValid".postln;
 
 		case
 		{ (i == 0) && ruleP[\enforceChordPosition] } {
