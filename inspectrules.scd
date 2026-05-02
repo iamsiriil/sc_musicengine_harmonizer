@@ -17,13 +17,13 @@ s.waitForBoot{
 
 	// Change default rules
 	MERules.changeRules((
-		enforceChordPosition:         true,
-		enforceRootPosition:          true,
-		enforceFirstInversion:        false,
-		enforceSecondInversion:       false,
-		enforceThirdInversion:        false,
-		enforceExtendedInversion:     false,
-		enforceUnisonProhibition:     true
+		enforceChordPosition:     true,
+		enforceRootPosition:      true,
+		enforceFirstInversion:    false,
+		enforceSecondInversion:   false,
+		enforceThirdInversion:    false,
+		enforceExtendedInversion: false,
+		enforceUnisonProhibition: true
 
 		//\enforceVoiceCrossProhibition: true,
 	));
@@ -62,7 +62,7 @@ s.waitForBoot{
 // Monitor number of backtrack calls
 (
 MEBacktrack.counter = 0;
-~c0 = MEChord("Bm3P5m7", prevChord: ~p2);
+~c0 = MEChord("Bm3P5m7M9", prevChord: ~p2, voiceNum: 7);
 "Number of chords generated: ".post;
 ~c0.chords.size.postln;
 "Number of recursive calls:  ".post;
