@@ -27,17 +27,21 @@ MEChord {
 		};
 
 		/* 2. Initialize chord data dictionary */
-		chordData[\symbol]  = noteRange.symbol.asSymbol;                           // Always use the normalized symbol as a
-		                                                                           // SC Symbol and not the alias, if it exists).
-		chordData[\degrees] = noteRange.intervals;                                 // Array of degrees present in range.
-		chordData[\rules]   = newR;
-		chordData[\pChord]  = newP;
+		chordData[\symbol]  = noteRange.symbol.asSymbol; // Always use the normalized symbol as a
+		                                                 // SC Symbol and not the alias, if it exists).
+		chordData[\degrees] = noteRange.intervals;       // Array of degrees present in range.
+		chordData[\rules]   = newR;                      // Custom rule profile dictionary.
+		chordData[\pChord]  = newP;                      // Previous chord as MENoteRange.
 
 		/* 3. Initialize MEVoice class */
-		if (newN.notNil) {
-			MEVoice.voiceNumber = newN;
+		if (newN.isNil) {
+			MEVoice.voiceNumber = chordData[\degrees].size; // Get voice number from number of degrees.
 		} {
-			MEVoice.voiceNumber = chordData[\degrees].size;                        // Get voice number from number of degrees.
+			if ((newN >= chordData[\degrees].size) && ((newN >= 4) && (newN <= 7))) {
+				MEVoice.voiceNumber = newN;
+			} {
+				Error("% is not a valid number of voices.".format(newN)).throw;
+			};
 		};
 
 		/* 4. Get valid vocal ranges */
@@ -81,7 +85,8 @@ MEChord {
 			}.as(OrderedIdentitySet);
 		};
 
-		// Sort by proximity to previous voice note (bias twards small leaps and common tones ??)
+		// Sort by proximity to previous voice note
+		// (bias twards small leaps and common tones ??)
 		if (prevChord.notNil) {
 
 			names.do { |v, i|
