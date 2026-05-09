@@ -16,20 +16,22 @@ s.waitForBoot{
 	}).add;
 
 	// Change default rules
-	MERules.changeRules((
-		enforceChordPosition:     true,
-		enforceRootPosition:      true,
-		enforceFirstInversion:    false,
-		enforceSecondInversion:   false,
-		enforceThirdInversion:    false,
-		enforceExtendedInversion: false,
-		enforceUnisonProhibition: true
-
-		//\enforceVoiceCrossProhibition: true,
-	));
+//	MERules.toggleRules((
+//		enforceChordPosition:     true,
+//		enforceRootPosition:      true,
+//		enforceFirstInversion:    false,
+//		enforceSecondInversion:   false,
+//		enforceThirdInversion:    false,
+//		enforceExtendedInversion: false,
+//		enforceUnisonProhibition: true
+//
+//		//\enforceVoiceCrossProhibition: true,
+//	));
 
 	// Dummy rule profile 1
 	~r1 = Dictionary[
+		\enforceParallelOctaves   -> true,
+		\enforceParallelFifths    -> true,
 		\enforceChordPosition     -> false,
 		\enforceRootPosition      -> true,
 		\enforceFirstInversion    -> false,
@@ -41,6 +43,8 @@ s.waitForBoot{
 
 	// Dummy rule profile 2
 	~r2 = Dictionary[
+		\enforceParallelOctaves   -> true,
+		\enforceParallelFifths    -> true,
 		\enforceChordPosition     -> true,
 		\enforceRootPosition      -> false,
 		\enforceFirstInversion    -> false,
