@@ -1,11 +1,77 @@
 MEChordRules : MERules {
 
-/*
-	TWO CHORD CHECKERS
-    - Valid melodic leaps
-	- parallel fifths
-	- parallel octaves
-*/
+	*checkParallelOctaves { |nextChord, data|
+		var result = false;
+		var indices = List();
+		var octaves = [12, 24, 36, 48];
+		var i, j;
+
+		//"checkParallelOctaves".postln;
+
+		if (data[\pChord].notNil) {
+
+			i = 0;
+			while { i < (MEVoice.voiceNumber - 1) } {
+				j = i + 1;
+				while { j < MEVoice.voiceNumber } {
+					if (octaves.includes((data[\pChord][i].midi - data[\pChord][j].midi).abs)) {
+						indices.add([i, j]);
+					};
+					j = j + 1;
+				};
+				i = i + 1;	
+			};
+
+			indices.do { |i|
+				result = result || (
+					((data[\pChord][i[0]].midi - data[\pChord][i[1]].midi).abs ==
+					(nextChord[i[0]].midi - nextChord[i[1]].midi).abs) &&
+					(data[\pChord][i[0]].midi != nextChord[i[0]].midi)
+				)
+			};
+			^result.not;
+		} {
+			^true;
+		};
+	}
+
+	/****************************************************************************************/
+
+	*checkParallelFifths { |nextChord, data|
+		var result = false;
+		var indices = List();
+		var fifths = [7, 19, 31, 43];
+		var i, j;
+
+		//"checkParallelFifths".postln;
+
+		if (data[\pChord].notNil) {
+			i = 0;
+			while { i < (MEVoice.voiceNumber - 1) } {
+				j = i + 1;
+				while { j < MEVoice.voiceNumber } {
+					if (fifths.includes((data[\pChord][i].midi - data[\pChord][j].midi).abs)) {
+							indices.add([i, j]);
+						};
+						j = j + 1;
+					};
+					i = i + 1;
+				};
+
+				indices.do { |i|
+					result = result || (
+						((data[\pChord][i[0]].midi - data[\pChord][i[1]].midi).abs ==
+						(nextChord[i[0]].midi - nextChord[i[1]].midi).abs) &&
+						(data[\pChord][i[0]].midi != nextChord[i[0]].midi)
+					)
+				};
+				^result.not;
+			} {
+				^true;
+			}
+	}
+
+	/****************************************************************************************/
 
 	*checkChordIsComplete { |nextChord, data|
 		var chordInt = nextChord.collect { |c| c.degree }.asSet;
@@ -24,21 +90,22 @@ MEChordRules : MERules {
 
 		//"chordIsValid".postln;
 
-		/*if (data[\pChord].notNil) {
-			this.checkPrevChord(nextChord, data);
-		};*/
-
-		^MEChordRules.checkChordIsComplete(nextChord, data);
+		if (rules[\enforceParallelFifths] ) {
+			result = result && MEChordRules.checkParallelFifths(nextChord, data);
+		};
+		if (rules[\enforceParallelOctaves] )  {
+			result = result && MEChordRules.checkParallelOctaves(nextChord, data);
+		};
+		^result && MEChordRules.checkChordIsComplete(nextChord, data);
 	}
 
 	/****************************************************************************************/
 
-	*checkUnisons { |nextChord, menote| // <- issue here!
-		var notes = nextChord.select { |n| n.isKindOf(MENote) };
+	*checkUnisons { |nextChord, menote, i|
 
-		//"checkUnisons".postln;
+		"checkUnisons".postln;
 
-		^notes.count { |n| n.name == menote.name } <= 2;
+		^(nextChord[i] == nextChord[i - 1]).not.postln;
 	}
 
 	/****************************************************************************************/
@@ -66,10 +133,10 @@ MEChordRules : MERules {
 
 		if (degreesNum == voiceNum) {
 			^(nextChord[i].midi > nextChord[i - 1].midi) &&
-			((nextChord[i].midi - nextChord[i - 1].midi).abs <= 12);
+			((nextChord[i].midi - nextChord[i - 1].midi).abs < 12);
 		} {
 			^(nextChord[i].midi >= nextChord[i - 1].midi) &&
-			((nextChord[i].midi - nextChord[i - 1].midi).abs <= 12);
+			((nextChord[i].midi - nextChord[i - 1].midi).abs < 12);
 		};
 	}
 
@@ -89,34 +156,30 @@ MEChordRules : MERules {
 	*noteIsValid { |nextChord, menote, data, i|
 		var degreesNum = data[\degrees].size;
 		var voiceNum   = MEVoice.voiceNumber;
+		var result = true;
 		var ruleP;
 
 		//"noteIsValid".postln;
 
-		if (data[\rules].notNil) {
-			ruleP = data[\rules];
-		} {
-			ruleP = rules;
-		};
-
-
 		case
-		{ (i == 0) && ruleP[\enforceChordPosition] } {
+		{ (i == 0) && rules[\enforceChordPosition] } {
 			case
-			{ ruleP[\enforceRootPosition]      } { ^menote.number(true) == 1 }
-			{ ruleP[\enforceFirstInversion]    } { ^menote.number(true) == 3 }
-			{ ruleP[\enforceSecondInversion]   } { ^menote.number(true) == 5 }
-			{ ruleP[\enforceThirdInversion]    } { ^menote.number(true) == 7 }
-			{ ruleP[\enforceExtendedInversion] } { ^Set[9, 11, 13].includes(menote.number(true)) }
+			{ rules[\enforceRootPosition]      } { ^menote.number(true) == 1 }
+			{ rules[\enforceFirstInversion]    } { ^menote.number(true) == 3 }
+			{ rules[\enforceSecondInversion]   } { ^menote.number(true) == 5 }
+			{ rules[\enforceThirdInversion]    } { ^menote.number(true) == 7 }
+			{ rules[\enforceExtendedInversion] } { ^Set[9, 11, 13].includes(menote.number(true)) }
 		}
 		{ (i > 0) && (degreesNum == voiceNum) } {
 			^(this.checkVoiceSpacing(nextChord, data, i) &&
 			this.checkRepeatedDegrees(nextChord, menote, data));
 		}
 		{ (i > 0) && (degreesNum < voiceNum) } {
-			^(this.checkVoiceSpacing(nextChord, data, i) &&
-			this.checkUnisons(nextChord, menote)         &&
-			this.checkDuplicateDegrees(nextChord, menote, data));
+			if (rules[\enforceUnisonProhibition]) {
+				result = result && this.checkUnisons(nextChord, menote, i);
+			};
+			^(result && this.checkVoiceSpacing(nextChord, data, i) &&
+			this.checkDuplicateDegrees(nextChord, menote, data)).postln;
 		};
 		^true;
 	}
