@@ -20,7 +20,7 @@ Pbind(\midinote, Pseq((~c.chords[3] >> 12).midi)).play;
 // Five part realizations of a F#min triad,
 // given the default set of rules
 (
-~c1 = MEChord("F#min", voiceNum: 6);
+~c1 = MEChord("F#min", voiceNum: 5);
 
 // Total number of realizations given the default rule profile
 ~c1.chords.size.postln;
@@ -45,7 +45,7 @@ Pbind(\midinote, Pseq((~c1.chords[10] >> 12).midi)).play;
 	\enforceUnisonProhibition -> true
 ];
 
-~c2 = MEChord("E-^7", ruleProf: ~r2, voiceNum: 5);
+~c2 = MEChord("E-^7", ruleProf: ~r2, voiceNum: 6);
 
 // Total number of realizations given the default rule profile
 ~c2.chords.size.postln;
