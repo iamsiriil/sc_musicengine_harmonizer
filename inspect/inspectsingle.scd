@@ -42,7 +42,7 @@ Pbind(\midinote, Pseq((~c1.chords[10] >> 12).midi)).play;
 	\enforceSecondInversion   -> false,
 	\enforceThirdInversion    -> false,
 	\enforceExtendedInversion -> false,
-	\enforceUnisonProhibition -> true   // Not working
+	\enforceUnisonProhibition -> true
 ];
 
 ~c2 = MEChord("E-^7", ruleProf: ~r2, voiceNum: 5);
