@@ -1,11 +1,8 @@
 MEChord {
-	//var <chordData;
 	var index;
-	var <chords; // <- change to register (implement first resolution backtrack function)
-	//var chord;
+	var <chords;
 
-
-	*new { |symbol, prevChord, ruleProf, voiceNum| // <- backtrackAll = false
+	*new { |symbol, prevChord, ruleProf, voiceNum|
 		^super.new.init(symbol, prevChord, ruleProf, voiceNum)
 	}
 
@@ -25,32 +22,28 @@ MEChord {
 			MESession.chordData[noteRange.symbol.asSymbol] = noteRange;
 		};
 
+		/* 2. Toggle rules */
 		if (newR.notNil) {
-			MErules.toggleRules(newR);
+			MERules.toggleRules(newR);
 		};
 
-		/* 2. Initialize MEVoice */
+		/* 3. Set voice number */
 		MEChord.setVoiceNumber(newN, noteRange.intervals);
 
-		/* 3. Initialize chord data dictionary */
-		chordData[\symbol]  = noteRange.symbol.asSymbol; // Always use the normalized symbol as a
-		                                                 // SC Symbol and not the alias, if it exists).
-		chordData[\degrees] = noteRange.intervals;       // Array of degrees present in range.
-	//	chordData[\rules]   = newR;                      // Custom rule profile dictionary.
-		chordData[\pChord]  = newP;                      // Previous chord as MENoteRange.
+		/* 4. Initialize data dictionary */
+		chordData[\symbol]  = noteRange.symbol.asSymbol;
+		chordData[\degrees] = noteRange.intervals;                   // Array of degrees present in range.
+		chordData[\pChord]  = newP;                                  // Previous chord as MENoteRange.
+		chordData[\range]   = MEChord.getChordVocalRange(chordData); // Get valid notes for each of the voices
 
-		/* 5. Get valid vocal ranges */
-		chordData[\range] = MEChord.getChordVocalRange(chordData);           // Get sets of valid notes within vocal range.
-
-		/* 6. Get chords */
+		/* 5. Get chords */
 		chords = MEChord.getChords(chordData).asArray;                             // Get collection of all possible solutions.
 
-		/* 7. Convert each chord into a MENoteRange */
+		/* 6. Convert each chord into a MENoteRange */
 		chords.do { |n, i| chords[i] = MENoteRange.with(noteRange.meSymbol, *n) }; // Convert each solution into a MENoteRange object.
 
-		/* 8. Assign a face chord */
+		/* 7. Assign a face chord */
 		index = 0;
-		//chord  = chords[index];                                                        // Assign first chord as object's facade.
 		MERules.resetRules;
 
 		^this;
@@ -100,36 +93,36 @@ MEChord {
 
 		names.do { |v, i|
 
-			range   = MEVoice.range[v];
-
-			temp = MESession.chordData[symbol].select { |n|
+			range = MEVoice.range[v];
+			temp  = MESession.chordData[symbol].select { |n|
 				(n.midi >= range[0]) && (n.midi <= range[1])
 			}.asArray;
 
 			dict[v] = temp;
 		};
 
-		// Sort by proximity to previous voice note
-		// (bias twards small leaps and common tones ??)
 		if (chordData[\pChord].notNil) {
 
 			names.do { |v, i|
-
-				// Get valid melodic leaps
-				// if \enforceMelodicIntervals
-				if (MERules.rules[\enforceMelodicIntervals].postln) {
+				// if \enforceMelodicIntervals -> remove invalid intervals
+				if (MERules.rules[\enforceMelodicIntervals]) {
 					dict[v] = dict[v].select { |n|
-						MEVoice.validIntervals.includes((chordData[\pChord][i].midi - n.midi).abs)
+						MEVoice.validIntervals.includes((chordData[\pChord][i].midi - n.midi).abs);
 					};
 				};
 
-				// if \enforceCommonTone
-				//		-> remove all except common tone
-				// else
-				//		-> Sort by proximity to previous note
-				dict[v] = dict[v].sort { |a, b|
-					(chordData[\pChord][i].midi - a.midi).abs <=
-					(chordData[\pChord][i].midi - b.midi).abs
+				// if \enforceCommonTone -> remove all except common tone
+				if (MERules.rules[\enforceCommonTones]) {
+					var name = chordData[\pChord][i].name;
+					if (dict[v].any { |n| n.name == name }) {
+						dict[v] = dict[v].select { |n| n.name == name };
+					};
+				} {
+					// else -> Sort by proximity to previous note
+					dict[v] = dict[v].sort { |a, b|
+						(chordData[\pChord][i].midi - a.midi).abs <=
+						(chordData[\pChord][i].midi - b.midi).abs
+					};
 				};
 			};
 		};
@@ -159,12 +152,22 @@ MEChord {
 	/****************************************************************************************/
 
 	next {
-		if ((index >= 0) && (index < chords.size)) { index = index + 1 } { "Limit reached".warn }
+		if ((index >= 0) && (index < chords.size)) {
+			index = index + 1;
+		} {
+			"Limit reached".warn;
+		};
+		^chords[index];
 	}
 
 	/****************************************************************************************/
 
 	prev {
-		if ((index > 0) && (index < chords.size)) { index = index - 1 } { "Limit reached".warn }
+		if ((index > 0) && (index < chords.size)) {
+			index = index - 1;
+		} {
+			"Limit reached".warn;
+		};
+		^chords[index];
 	}
 }

@@ -6,13 +6,12 @@ MERules {
 	*initClass {
 
 		default = Dictionary[
-			/*
-			\enforceVocalRange            -> true,
+		//	\enforceVocalRange            -> true,
+		//	\enforceNoteDuplicate         -> false,
+		//	\enforceRootDuplicate         -> false,
+		//	\enforceThirdDuplicate        -> false,
+		//	\enforceFifthDuplicate        -> false,
 			\enforceCommonTones           -> false,
-			\enforceNoteDuplicate         -> false,
-			\enforceRootDuplicate         -> false,
-			\enforceThirdDuplicate        -> false,
-			\enforceFifthDuplicate        -> false,*/
 			\enforceMelodicIntervals      -> true,
 			\enforceParallelOctaves       -> true,
 			\enforceParallelFifths        -> true,
@@ -26,7 +25,7 @@ MERules {
 			\enforceUnisonProhibition     -> true
 		];
 
-		rules = default;
+		rules = default.deepCopy;
 
 		super.initClass;
 	}
@@ -36,12 +35,14 @@ MERules {
 	*listRules {
 
 		if (userDefault.notNil) {
+			"User default:".postln;
 			userDefault.keysValuesDo { |k, v|
 
 				"% ".format(k).padRight(29).post;
 				"%".format(v).postln;
 			};
 		} {
+			"Default".postln;
 			rules.keysValuesDo { |k, v|
 
 				"% ".format(k).padRight(29).post;
@@ -54,7 +55,9 @@ MERules {
 	/****************************************************************************************/
 
 	*setRules { |ruleDict|
-		var temp = default;
+		var temp = default.deepCopy;
+
+		//"setRules".postln;
 		
 		ruleDict.keysValuesDo { |k, v|
 			temp[k] = v;
@@ -67,39 +70,20 @@ MERules {
 
 	/****************************************************************************************/
 
-	*resetRules {
-
-		if (userDefault.notNil) {
-			rules = userDefault;
-		} {
-			rules = default;
-		}
-	}
+	*resetRules { rules = if (userDefault.notNil) { userDefault } { default } }
 	
 	/****************************************************************************************/
 
-	*resetDefault {
-		rules = default;
-	}
+	*resetDefault { rules = default; userDefault = nil }
 
 	/****************************************************************************************/
 	
 	*toggleRules { |ruleDict|
 
+		//"toggleRules".postln;
+
 		ruleDict.keysValuesDo { |k, v|
-			rules[k] = [v];
+			rules[k] = v;
 		};
-	}
-
-	/****************************************************************************************/
-
-	*rules_ { |ruleDict|
-		rules = ruleDict;
-	}
-
-	/****************************************************************************************/
-
-	*default_ {
-		rules = default;
 	}
 }

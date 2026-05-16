@@ -103,9 +103,9 @@ MEChordRules : MERules {
 
 	*checkUnisons { |nextChord, menote, i|
 
-		"checkUnisons".postln;
+		//"checkUnisons".postln;
 
-		^(nextChord[i] == nextChord[i - 1]).not.postln;
+		^(nextChord[i] == nextChord[i - 1]).not;
 	}
 
 	/****************************************************************************************/
@@ -157,7 +157,6 @@ MEChordRules : MERules {
 		var degreesNum = data[\degrees].size;
 		var voiceNum   = MEVoice.voiceNumber;
 		var result = true;
-		var ruleP;
 
 		//"noteIsValid".postln;
 
@@ -179,7 +178,7 @@ MEChordRules : MERules {
 				result = result && this.checkUnisons(nextChord, menote, i);
 			};
 			^(result && this.checkVoiceSpacing(nextChord, data, i) &&
-			this.checkDuplicateDegrees(nextChord, menote, data)).postln;
+			this.checkDuplicateDegrees(nextChord, menote, data));
 		};
 		^true;
 	}
