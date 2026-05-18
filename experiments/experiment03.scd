@@ -5,25 +5,15 @@ s.boot;
 (
 SynthDef(\fm_chord, {
 	arg chord= #[0, 0, 0, 0, 0, 0, 0], mRatio=1, cRatio=1, index=1, iScale=3,
-	amp=0.2, atk=0.01, rel=3, cAtk=4, cRel=(-4), pan=0, gate=0;
+	amp=0.2, atk=0.01, rel=3, cAtk=4, cRel=(-4), pan=0;
 	var iEnv = EnvGen.kr(
 		Env.new(
 			[index, index * iScale, index],
 			[atk, rel],
 			[cAtk, cRel]
-		),
-		gate: gate,
+		)
 	);
-	var env  = EnvGen.kr(
-		Env.new(
-			[0, 1, 0],
-			[atk, rel],
-			[cAtk, cRel],
-			releaseNode: 1
-		),
-		gate: gate,
-		doneAction: 2
-	);
+	var env  = EnvGen.kr(Env.perc(atk, rel, curve: [cAtk, cRel]), doneAction: 2);
 	var mod1 = SinOsc.ar(chord[0] * mRatio, mul: chord[0] * mRatio * iEnv);
 	var mod2 = SinOsc.ar(chord[1] * mRatio, mul: chord[1] * mRatio * iEnv);
 	var mod3 = SinOsc.ar(chord[2] * mRatio, mul: chord[2] * mRatio * iEnv);
@@ -49,10 +39,20 @@ SynthDef(\fm_chord, {
 /****************************************************************************************/
 // Create a progression
 (
-~p = ["FM3M6P5", "F#o7", "Gm3P5m7", "DM3A5m7", "CP4P5m7", "CM3m6m7A9", "FM3M6M9"];
-~p.size.postln;
-~d.size.postln;
-
+~p = ["Em", "C^7", "BP4P5m7", "B7", "D7", "BFr", "Bm3d5m7", "G#d4d5d7", "E7", "E-7", "C#o7",
+	"A-7", "F#-7o5", "F#P4d5m7", "F#-7o5", "D#o7", "BM3P5m9", "D7", "D-7", "B-7o5", "G#o7",
+	"CM3A5M7", "A-", "BP4P5m7", "B7", "F#-7o5", "A-", "B7", "F#-7o5", "A-", "B7",
+	"Em", "C^7", "BP4P5m7", "BM3d5m7", "DGr", "G#m3P5d7", "G#o7", "E7", "EM3m6m7", "E-7", "A#o7", "A#o7", "F-7o5",
+	"B7"
+];
+~d = [
+	3, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1,
+	2, 1, 1, 2, 1, 1, 4, 2, 1, 1,
+	1, 3, 1, 1, 1, 1, 2, 1, 1, 4,
+	3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	2
+];
+//~p = ["E-7", "C#o7"];
 ~r = Array.new(~p.size);
 ~v = 5;
 
@@ -65,7 +65,7 @@ SynthDef(\fm_chord, {
 		MEChord(
 			c,
 			prevChord: ~r[i - 1],
-			ruleProf: [enforceUnisonProhibition: false],
+			ruleProf: [enforceChordPosition: false],
 			voiceNum: ~v
 		).chord;
 	};
@@ -76,26 +76,23 @@ SynthDef(\fm_chord, {
 ~r.do { |c| c.postln };
 "]".postln;
 )
-
+~r[~r.size - 2]
+MEChord("C#o7", prevChord: ~r[~r.size - 2], voiceNum: ~v)
 /****************************************************************************************/
 // Create a routine
 (
 Routine({
-	var syn;
 	~r.do { |c, i|
 		c.names.join(", ").postln;
-		syn = Synth(\fm_chord, [
+		Synth(\fm_chord, [
 			\chord, c.freq,
 			\iScale, 0.5,
 			\index, 2,
 			\mRatio, 1,
 			\cRatio, 1,
-			\rel, 1,
-			\gate, 1
+			\rel, 3
 		]);
-		2.wait;
-		syn.set(\gate, 0);
+		~d[i].wait;
 	}
 }).play;
 )
-
