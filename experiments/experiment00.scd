@@ -2,6 +2,21 @@
 s.boot;
 /****************************************************************************************/
 (
+SynthDef(\tone, {
+	arg freq=440, amp=0.3;
+	var env = EnvGen.kr(
+		Env.new(
+			[0, 1, 0],
+			[0.01, 1],
+			[4 -4]
+		),
+		doneAction: 2
+	);
+	var sig = Pulse.ar(freq) * env * amp;
+	sig = Pan2.ar(sig, 0);
+	Out.ar(0, sig);
+}).add;
+
 ~p = ["C-", "F-", "F#o", "G", "C-", "DbNap", "C-", "GP4P5m7", "G7", "Cs4", "Cm3P5"];
 
 ~r0 = Dictionary[
@@ -100,13 +115,12 @@ MERules.resetDefault;
 /****************************************************************************************/
 (
 Routine({
-	var syn;
 
 	~prg.do { |c|
 
 		c.postln;
 		c.do { |n|
-			syn = Synth(\tone, [\freq, n.freq]);
+			Synth(\tone, [\freq, n.freq]);
 		};
 		1.wait;
 	}
