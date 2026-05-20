@@ -22,7 +22,7 @@ MERules.resetDefault;
 		MEChord(
 			c,
 			prevChord: nil,
-			ruleProf: [enforceChordPosition: true, enforceFirstInversion: false, enforceSecondInversion: true],
+			ruleProf: nil,
 			voiceNum: ~v
 		).chords.choose;
 	} {
