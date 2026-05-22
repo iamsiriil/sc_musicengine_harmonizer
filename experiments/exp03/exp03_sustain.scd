@@ -1,5 +1,34 @@
 /****************************************************************************************/
 (
+~getChords = { |prog, voiceNum|
+	var result = Array(prog.size);
+
+	prog.do { |c, i|
+		var temp;
+
+		temp = if ( i == 0 ) {
+			MEChord(
+				c,
+				prevChord: nil,
+				ruleProf: nil,
+				voiceNum: voiceNum
+			).chords.choose;
+		} {
+			MEChord(
+				c,
+				prevChord: result[i - 1],
+				ruleProf: [enforceChordPosition: false, enforceUnisonProhibition: false],
+				voiceNum: voiceNum
+			).chord;
+		};
+		result.add(temp);
+	};
+	result;
+
+};
+
+/****************************************************************************************/
+
 ~sustainCommonTones = { |voice, dur, tempV, tempD, i|
 	var size;
 
