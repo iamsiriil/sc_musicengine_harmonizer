@@ -1,4 +1,6 @@
 /****************************************************************************************/
+// CHOPIN - Prelude in E minor Experiment
+/****************************************************************************************/
 (
 s.waitForBoot({
 	"./exp03_resources.scd".loadRelative;
@@ -35,7 +37,7 @@ s.waitForBoot({
 ~clock = TempoClock.new(50/60);
 
 // Start reverb and mixer
-Synth(\rev, [\in, 30, \out, 0, \revamp, 0.1]);
+Synth(\rev, [\in, 30, \out, 0, \revamp, 0.9]);
 Synth(\mix, [\out, 30, \amp, 0.9]);
 
 // Play Pspawner

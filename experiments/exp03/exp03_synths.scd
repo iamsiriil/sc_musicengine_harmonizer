@@ -126,7 +126,7 @@ SynthDef(\rev, {
 	var wet = FreeVerb2.ar(
 		sig[0], sig[1],
 		mix: 0.7,
-		room: 0.5,
+		room: 0.4,
 		damp: 0.85,
 		mul: revamp
 	);
