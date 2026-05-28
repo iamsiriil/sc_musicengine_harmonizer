@@ -2,10 +2,9 @@
 (
 ~getChords = { |prog, voiceNum|
 	var result = Array(prog.size);
+	var temp;
 
 	prog.do { |c, i|
-		var temp;
-
 		temp = if ( i == 0 ) {
 			MEChord(
 				c,
@@ -17,14 +16,16 @@
 			MEChord(
 				c,
 				prevChord: result[i - 1],
-				ruleProf: [enforceChordPosition: false, enforceUnisonProhibition: false],
+				ruleProf: [
+					enforceChordPosition: false,
+					enforceUnisonProhibition: false
+				],
 				voiceNum: voiceNum
 			).chord;
 		};
 		result.add(temp);
 	};
 	result;
-
 };
 
 /****************************************************************************************/
@@ -43,7 +44,6 @@
 			~sustainCommonTones.(voice, dur, tempV, tempD, i + 1);
 		}{
 			size = tempD.size;
-
 			tempD[size - 1] = tempD[size - 1] + dur[i];
 			~sustainCommonTones.(voice, dur, tempV, tempD, i + 1);
 		}
@@ -68,9 +68,7 @@
 		tempD = Array.new(v.size);
 		temp = ~sustainCommonTones.(v, dur, tempV, tempD, 0);
 
-		temp[0].do { |n, i|
-			n.set(\dur, temp[1][i]);
-		};
+		temp[0].do { |n, i| n.set(\dur, temp[1][i]) };
 
 		voices.add(MENoteRange.with(nil, *temp[0]));
 	};
