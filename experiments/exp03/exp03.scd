@@ -2,8 +2,9 @@
 (
 s.waitForBoot({
 	"./exp03_resources.scd".loadRelative;
-	"./exp03_sustain.scd".loadRelative;
 	"./exp03_patterns.scd".loadRelative;
+	"./exp03_synths.scd".loadRelative;
+	"./exp03_utils.scd".loadRelative;
 });
 )
 /****************************************************************************************/
@@ -18,6 +19,7 @@ s.waitForBoot({
 ~chords2 = ~getChords.(~p2, ~v);
 ~voices2 = ~getVoices.(~chords2, ~d2, ~v);
 
+// Post progressions
 "\nProgression #1 [".postln;
 ~chords1.do { |c| c.postln };
 "]".postln;
@@ -26,7 +28,16 @@ s.waitForBoot({
 ~chords2.do { |c| c.postln };
 "]".postln;
 
-// Play Pspawner
+/****************************************************************************************/
+// Play piece
+
+// Set clock
 ~clock = TempoClock.new(50/60);
-~spawner.(~m, ~b, ~voices1, ~voices2).play(~clock);
+
+// Start reverb and mixer
+Synth(\rev, [\in, 30, \out, 0, \revamp, 0.1]);
+Synth(\mix, [\out, 30, \amp, 0.9]);
+
+// Play Pspawner
+~spawner.(~m, ~b, ~voices1, ~voices2, \solo, \bass,\fm).play(~clock);
 )
