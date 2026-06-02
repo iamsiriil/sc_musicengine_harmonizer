@@ -14,10 +14,11 @@
 		\cRatio, 1,
 		\pan, -0.4,
 		\out, 4,
-		\tmp, melody.asPseq(\tmp),
+		\mAmp, 29,
+		\tmp, melody.asPseq(\tmp).poll,
 		\tempoChange, Pfunc { |ev| if (ev[\tmp] > 0) { ~clock.tempo = ev[\tmp] }; 0 },
 		\name, Pseq(melody.names),
-		\printName, Pfunc { |ev| ev[\name].postln }
+		//\printName, Pfunc { |ev| ev[\mAmp].postln }
 	)
 };
 
@@ -28,9 +29,9 @@
 		\instrument, bSynth,
 		\midinote, bass.asPseq(\midi),
 		\dur, bass.asPseq(\dur),
-		\legato, 0.6,
-		\atk, 0.01,
-		\amp, 0.3,
+		\legato, 0.5,
+		\atk, 0.005,
+		\amp, 0.15,
 		\pan, -0.7,
 		\out, 6
 	)
@@ -93,7 +94,7 @@
 
 /****************************************************************************************/
 
-~spawner = { |melody, bass, voices1, voices2, mSynth, bSynth, cSynth|
+~spawner = { |melody, bass, voices1, voices2, voices3, mSynth, bSynth, cSynth|
 	Pspawner({ |sp|
 		sp.par(~melody.value(melody, mSynth));
 
@@ -101,8 +102,8 @@
 		sp.par(
 			Pbind(
 				\instrument, \kick,
-				\dur, Pseq([3/4, 1/4, Rest(1), 3/4, 1/4, Rest(1)], inf),
-				\amp, 1.0, //Pseq([0.9, 0.7, Rest(1), 0.8, 0.6, Rest(1)], inf),
+				\dur, Pseq([1/4, 2/4, 1/4, Rest(1), 3/4, 1/4, Rest(1)], 23),
+				\amp, 0.7,
 				\freq, 28.midicps,
 				\out, 16,
 				\pan, -8
@@ -111,9 +112,9 @@
 		sp.par(
 			Pbind(
 				\instrument, \snare,
-				\dur, Pseq([Rest(1), 1, Rest(1), 1], inf),
-				\freq, 28.midicps,
-				\amp, 0.9,
+				\dur, Pseq([Rest(1), 1, Rest(1), 1], 23),
+				\freq, 59.midicps,
+				\amp, 0.2,
 				\out, 18,
 				\pan, -7
 			)
@@ -123,6 +124,9 @@
 
 		sp.wait(3);
 		sp.seq(~counterpoint.value(voices2, cSynth));
+
+		sp.wait(2);
+		sp.seq(~counterpoint.value(voices3, cSynth));
 	});
 };
 )

@@ -2,18 +2,23 @@
 // EXPERIMENT 03 : Chopin, Prelude in E minor - Utils
 /****************************************************************************************/
 (
-~getChords = { |prog, voiceNum|
+~getChords = { |prog, voiceNum, fChord|
 	var result = Array(prog.size);
 	var temp;
 
 	prog.do { |c, i|
 		temp = if ( i == 0 ) {
-			MEChord(
-				c,
-				prevChord: nil,
-				ruleProf: nil,
-				voiceNum: voiceNum
-			).chords.choose;
+
+			if (fChord.notNil) {
+				fChord;
+			} {
+				MEChord(
+					c,
+					prevChord: nil,
+					ruleProf: nil,
+					voiceNum: voiceNum
+				).chords.choose;
+			};
 		} {
 			MEChord(
 				c,
